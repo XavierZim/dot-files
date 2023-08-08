@@ -1,0 +1,121 @@
+(defpoll time :interval "30s" `date "+%I:%M %P"`)
+(defpoll date :interval "30s" `date "+%a %D"`)
+(defpoll sound :interval "1s" `playerctl metadata --player=%any,firefox --format "{{title}} ~ {{artist}}"`)
+(defpoll volume :interval "1s" `awk -F"[][]" '/Left:/ {gsub("%",""); print $2 }' <(amixer sget Master)`)
+(defpoll currentwin :interval "1s" `xdotool getwindowfocus getwindowname`)
+(defpoll desknum :interval "100ms" :run-while showdesk `wmctrl -d | grep "*" | awk '{print $1}'`)
+
+(defvar eww "$HOME/github/eww/target/release/eww")
+(defvar brightness 100)
+(defvar night false)
+(defvar showdate false)
+(defvar showdesk false)
+(defvar showmusic false)
+(defvar showvol false)
+(defvar showbright false)
+(defvar showbat false)
+
+(defwindow bar
+           :monitor 0
+           :geometry (geometry :x "0%"
+                               :y "0%"
+                               :width "100%"
+                               :height "50px"
+                               :anchor "top center")
+           :stacking "fg"
+           (lcr))
+
+(defwidget lcr []
+    (centerbox :space-evenly false
+        (box :halign "start"
+             :space-evenly false
+             (clock)(desktops))
+        (box :halign "center"
+             :space-evenly false
+             (musicbox))
+        (box :halign "end"
+             :space-evenly false
+             (bright)(vol)(power))))
+
+(defwidget clock []
+    (eventbox :onhover "${eww} update showdate=true"
+              :onhoverlost "${eww} update showdate=false"
+        (box :class "stdwidget"
+        (box :class "clock"
+             :space-evenly false
+            (revealer :reveal showdate
+                      :transition "slideleft" date)
+            (label :text " ${time}")))))
+(defwidget desktops [] (eventbox :onhover "${eww} update showdesk=true"
+              :onhoverlost "${eww} update showdesk=false"
+    (box :class "stdwidget"
+    (box :class "desktops"
+         :space-evenly false
+         (revealer :reveal showdesk :transition "slideleft"
+            (box :space-evenly false
+                (button :onclick "wmctrl -s 0" {desknum==0 ? " " : " "})
+                (button :onclick "wmctrl -s 1" {desknum==1 ? " " : " "})
+                (button :onclick "wmctrl -s 2" {desknum==2 ? " " : " "})
+                (button :onclick "wmctrl -s 3" {desknum==3 ? " " : " "})
+                (button :onclick "wmctrl -s 4" {desknum==4 ? " " : " "})
+                ))
+         (label :text {currentwin=="" ? "󱂬 ..." : "󱂬 ${currentwin}"}
+           :limit-width "17")))))
+
+(defwidget musicbox []
+    (eventbox :onhover "${eww} update showmusic=true"
+              :onhoverlost "${eww} update showmusic=false"
+        (box :class "stdwidget"
+        (box :class "music"
+             :space-evenly false
+             (revealer :reveal showmusic :transition "slideleft"
+                (box :space-evenly false
+                     (button :class "musbut" :onclick "playerctl --player=%any,firefox previous" "󰙤")
+                     (button :class "musbut" :onclick "playerctl --player=%any,firefox play-pause" "")
+                     (button :class "musbut" :onclick "playerctl --player=%any,firefox next" "󰙢")))
+             (label :text {sound=="" ? "󰋋 it's quiet..." : "󰋋 ${sound}"}
+                    :limit-width "80")))))
+
+(defwidget vol []
+    (eventbox :onhover "${eww} update showvol=true"
+              :onhoverlost "${eww} update showvol=false"
+    (box :class "stdwidget"
+    (box :class "volume"
+         :space-evenly false
+         (revealer :reveal showvol :transition "slideleft"
+            (scale :value volume
+                   :min 10
+                   :max 101
+                   :class "volbar"
+                   :onchange "amixer sset 'Master' {}%"))
+         (label :text "󰕾 ${volume}%")))))
+
+(defwidget bright []
+    (eventbox :onhover "${eww} update showbright=true"
+              :onhoverlost "${eww} update showbright=false"
+    (box :class "stdwidget"
+    (box :class "volume"
+         :space-evenly false
+         (revealer :reveal showbright :transition "slideleft"
+            (scale :value brightness
+                   :min 0
+                   :max 101
+                   :class "volbar"
+                   :onchange "~/.config/eww/scripts/brightness.sh {} ${night}"))
+                (button :onclick {night==false ? "${eww} update night=true & ~/.config/eww/scripts/brightness.sh ${brightness} true" : "${eww} update night=false & ~/.config/eww/scripts/brightness.sh ${brightness} false"} (label :text {!night ? "󰃠 ${brightness}%" : "󰃜 ${brightness}%"}))))))
+
+
+(defwidget power []
+    (eventbox :onhover "${eww} update showbat=true"
+              :onhoverlost "${eww} update showbat=false"
+    (box :class "stdwidget"
+    (box :class "bat"
+         :space-evenly false
+         (revealer :reveal showbat :transition "slideleft"
+            (box :space-evenly false
+                 (button :onclick "systemctl reboot" " ")
+                 (button :onclick "systemctl suspend" "󰒲 ")
+                 (button :onclick "systemctl hibernate" "󰤄 ")
+                 (button :onclick "killall bspwm" "󰍃 ")
+                 ))
+         (button :onclick "systemctl poweroff" (label :text "" :style "padding: 0 7 0 5;"))))))

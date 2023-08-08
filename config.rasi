@@ -1,0 +1,58 @@
+*{
+    normal-background: #ccccff;// #343F44;
+    normal-foreground: #336666;
+    alternate-normal-foreground: #4c5361;
+    alternate-normal-background: #dde4f2;
+    selected-normal-background: #ffccff;
+    selected-normal-foreground: #663366;
+}
+
+window{
+    background-color: #f7f3ee;
+    border: 5px;
+    border-color:  #D3C6AA;
+}
+
+configuration {
+ modi: "window,drun,ssh,combi";
+ font: "CaskaydiaCove Nerd Font 15";
+ combi-modi: "window,drun,ssh";
+ }
+prompt{
+    text-color: #605a52;
+}
+textbox-prompt-colon {
+    str:        "󰇙";
+    text-color: #dcd3c6;
+}
+
+entry {
+    placeholder: "what'cha lookin' fer";
+    cursor: pointer;
+    text-color: #605a52;
+}
+
+element {
+  orientation: horizontal;
+  children: [ element-text, element-icon ];
+  spacing: 5px;
+  padding: 0 10px 0 10px;
+  margin: 0 10 5 10;
+  border-radius: 0 0 10 10;
+  border: 0 0 5 0;
+  border-color: #dcd3c6;
+}
+element-icon {
+    size: 1.5em;
+}
+element-text {
+    vertical-align: 0.5;
+}
+listview{
+    columns: 2;
+    lines: 6;
+    border: 5 0 0 0;
+    border-color: #dcd3c6;
+    padding: 10;
+    //scrollbar: false;
+}

@@ -1,0 +1,60 @@
+*{
+    all: unset;
+    font-family: "CaskaydiaCove Nerd Font";
+}
+scale trough{
+    all: unset;
+    min-width: 70px;
+    min-height: 10px;
+    border-radius: 15px;
+    background-color: #84bd00;
+    margin: 0 10 0 10;
+}
+
+.highlights{
+    margin: 8 0 8 0;
+    padding: 0 5 0 5;
+    border-radius: 5;
+}
+.clock{
+    @extend.highlights;
+    color: #336666;
+    background: #ccccff;
+}
+.desktops{
+    @extend.highlights;
+    color: #5b4343;
+    background: #f6cfcb;
+}
+.music{
+    @extend.highlights;
+    color: #663366;
+    background: #ffccff;
+}
+.volume{
+    @extend.highlights;
+    color: #525643;
+    background: #e2e9c1;
+}
+.bat{
+    @extend.highlights;
+    color: #5b5143;
+    background: #f7e0c3;
+}
+
+.stdwidget{
+    padding: 0 10 0 10;
+    margin: 10 10 0 10;
+    background-color: #f7f3ee;
+    color: #605a52;
+    border-radius: 8;
+}
+
+.musbut{
+    padding-right: 10px;
+}
+
+.volbar trough highlight{
+    background-color: #525643;
+    border-radius: 10px;
+}
